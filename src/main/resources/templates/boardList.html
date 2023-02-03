@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="/css/style.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+</head>
+<body>
+<table class="board_list">
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>조회수</th>
+    </tr>
+    <tr th:each="board : ${boardList}">
+        <td th:text="${board.pno}"></td>
+        <!-- 제목을 클릭하면 게시글을 읽음 -->
+        <td><a class='board-link' th:text="${board.title}" th:href="@{/board/post(pno=${board.pno})}"></a></td>
+        <td th:text="${board.writer}"></td>
+        <td th:text="${board.viewCnt}"></td>
+    </tr>
+</table>
+<a href="/board/posting"> 글쓰기 →</a>
+
+<!-- 페이징 처리 -->
+<nav th:if="${boardPagination.totalPages != 0}">
+    <div class="container">
+        <ul class="pagination pagination-primary m-4">
+
+            <li class="page-item ">
+                <!-- 첫 페이지로 이동 -->
+                <a class="page-link" th:href="@{/board(page=1)}" aria-level="First">
+                    <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
+                    첫페이지
+                </a>
+            </li>
+
+            <li class="page-item active">
+                <!-- 이전 페이지 -->
+            <li th:if="${boardPagination.hasPrev} ? 'disabled'">
+                <a class="page-link" th:href="@{/board(page=${boardPagination.prevIndex})}" aria-level="Previous">&lsaquo;</a>
+                <span aria-hidden="true"></span>
+            <li>
+            </li>
+
+            <!-- 페이지 번호 -->
+            <li th:each="page: ${#numbers.sequence(boardPagination.startPage, boardPagination.endPage)}"
+                th:class="(page == ${pageNo}+1) ? 'page-item active'">
+                <a class="page-link" th:text="${page}"
+                   th:href="@{/board(page=${page})}"></a>
+            </li>
+
+            <li class="page-item">
+                <!-- 다음 페이지 -->
+            <li th:if="${boardPagination.hasNext} ? 'disabled'">
+                <a class="page-link" th:href="@{/board(page=${boardPagination.nextIndex})}" aria-level="Next">&rsaquo;</a>
+                <span aria-hidden="true"></span>
+            </li>
+            </li>
+
+            <li class="page-item">
+                <!-- 마지막 페이지 -->
+                <a class="page-link" th:href="@{/board(page=${boardPagination.totalPages})}" aria-level="Last">
+                    <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                    마지막페이지
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>
+</body>
+</html>

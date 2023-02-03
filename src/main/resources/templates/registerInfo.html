@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>board</title>
+</head>
+<body>
+<script>
+    let showRegisterInfo = function(userId) {
+    $.ajax({
+        type:'GET',       // 요청 메서드
+        url: '/users',
+        headers : { "content-type": "application/json"}, // 요청 헤더
+        success : function(result){
+            // $("#commentList").html(result);
+            $("#commentList").html(toHtml(result));
+        },
+        error   : function(){ alert("error") }
+    });
+    }
+
+</script>
+
+</body>
+</html>
