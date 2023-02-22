@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 
     @PostMapping("/reissue")
     public ResponseEntity<JwtDto> reissue(@RequestBody JwtRequestDto jwtRequestDto) {
-        System.out.println("jwtRequestDto?? = " + jwtRequestDto);
+        System.out.println("reissue?? = " + jwtRequestDto);
          return ResponseEntity.ok(authService.reissue(jwtRequestDto));
         }
 

@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,18 +29,19 @@ public class BoardController {
 
     /*   모든 게시글 목록 (페이징)   */
     @GetMapping("/boards")
-    public Object readBoardList(@PageableDefault(size = 10, sort = "pno",
+    public ResponseEntity<Map<String, Object>> readBoardList(@PageableDefault(size = 10, sort = "pno",
             direction = Sort.Direction.DESC) Pageable pageable,
-                                @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
-                                @RequestParam(required = false,  value="option") String option,
-                                @RequestParam(required = false,  value="keyword") String keyword, SearchHandler sc) {
+                                                             @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+                                                             @RequestParam(required = false,  value="option") String option,
+                                                             @RequestParam(required = false,  value="keyword") String keyword, SearchHandler sc) {
 
         System.out.println(" pageNo "+pageNo);
         System.out.println(" option "+option);
         System.out.println("keyword = " + keyword);
         System.out.println("sc = " + sc);
 
-        return boardService.getBoardList(pageable, sc, pageNo);
+        Map<String, Object> map = boardService.getBoardList(pageable, sc, pageNo);
+        return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
     /*      게시물 읽기      */

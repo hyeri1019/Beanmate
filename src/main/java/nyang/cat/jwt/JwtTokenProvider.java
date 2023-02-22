@@ -24,10 +24,9 @@ import java.util.stream.Collectors;
 @Component
 public class JwtTokenProvider {
 
-
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 2;            // 30분
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 1;            // 1시간
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
 
     private static byte[] keyBytes  = Keys.secretKeyFor(SignatureAlgorithm.HS512).getEncoded();
@@ -69,6 +68,7 @@ public class JwtTokenProvider {
                 .build();
     }
 
+    /* JWT 로 인증객체 조회 */
     public Authentication getAuthentication(String accessToken) {
         System.out.println(" 권한 읽기 ");
         /*  토큰 디코딩  */
@@ -86,6 +86,7 @@ public class JwtTokenProvider {
 
         System.out.println("authorities = " + authorities);
 
+        /* 인증 주체 */
         UserDetails principal = new User(claims.getSubject(), "", authorities);
         return new UsernamePasswordAuthenticationToken(principal,"",authorities);
     }
