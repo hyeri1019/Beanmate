@@ -1,6 +1,7 @@
 package nyang.cat.board.entity;
 
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -32,13 +33,16 @@ public class Board {
     @Column(nullable=true)
     private int replyCnt;  // 댓글수
 
+
     private Date regTime; // 등록시간
 
     @Column(nullable=true)
     private String imageName;
 
-    @Column(nullable = true)
+    @Column(nullable=true)
     private String imagePath;
+
+
 
     public Board(String title, String writer, String content) {
         this.title = title;

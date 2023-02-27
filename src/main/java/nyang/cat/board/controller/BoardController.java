@@ -93,7 +93,6 @@ public class BoardController {
                 /* 파일 저장 */
                 file.transferTo(new File(filePath));
                 board.setImageName(fileName);
-                board.setImagePath(filePath+fileName);
             }
             return boardService.save(authentication, board);
 

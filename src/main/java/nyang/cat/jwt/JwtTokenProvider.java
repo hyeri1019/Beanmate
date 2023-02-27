@@ -20,7 +20,7 @@ public class JwtTokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;            // 1시간
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 1;            // 1시간
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
 
     private static byte[] keyBytes  = Keys.secretKeyFor(SignatureAlgorithm.HS512).getEncoded();
