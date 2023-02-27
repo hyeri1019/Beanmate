@@ -13,8 +13,10 @@ import java.util.List;
 @ToString
 public class Board {
 
-    @Id @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pno;
+
+    private String category;
 
     @NotBlank(message = "제목을 입력해주세요.")
     private String title;
@@ -31,6 +33,12 @@ public class Board {
     private int replyCnt;  // 댓글수
 
     private Date regTime; // 등록시간
+
+    @Column(nullable=true)
+    private String imageName;
+
+    @Column(nullable = true)
+    private String imagePath;
 
     public Board(String title, String writer, String content) {
         this.title = title;

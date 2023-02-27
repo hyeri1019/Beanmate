@@ -1,10 +1,9 @@
-package nyang.cat.dto;
+package nyang.cat.Users.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import nyang.cat.entity.SecurityUsers;
-import nyang.cat.entity.Users;
+import nyang.cat.Users.entity.Users;
 
 @Getter
 @AllArgsConstructor

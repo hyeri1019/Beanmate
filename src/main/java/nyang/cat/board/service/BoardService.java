@@ -5,11 +5,13 @@ import nyang.cat.board.dto.Pagination;
 import nyang.cat.board.dto.SearchHandler;
 import nyang.cat.board.entity.Board;
 import nyang.cat.board.repository.BoardRepository;
+import nyang.cat.Users.entity.Users;
 import nyang.cat.repository.UsersRepository;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -22,7 +24,7 @@ public class BoardService {
 
 
     /* ------------------ 페이징 ------------------*/
-    public Map getBoardList(Pageable pageable, SearchHandler sc, int pageNo) {
+    public Map getBoardList(Pageable pageable, SearchHandler sc, int pageNo, String category) {
         Map map = new HashMap();
 
         sc = Optional.ofNullable(sc).orElse(new SearchHandler());
@@ -33,26 +35,23 @@ public class BoardService {
         Page<Board> boardList = null;
         List<Board> listContent = null;
 
-        if (option.equals("제목")) {
+        if(category.equals("main")){
+            boardList = boardRepository.findAll(pageable);
+            listContent = boardList.getContent();
+        }
+        else if (option.equals("제목")) {
             boardList = boardRepository.findByTitleContaining(keyword, pageable);
             listContent = boardList.getContent();
-           }
-
-        else if(option.equals("제목 내용")) {
+        } else if (option.equals("제목 내용")) {
             System.out.println(" 제목+내용으로 검색 ");
-            boardList = boardRepository.findByTitleContainingOrContentContaining(keyword,keyword,pageable);
+            boardList = boardRepository.findByTitleContainingOrContentContaining(keyword, keyword, pageable);
             listContent = boardList.getContent();
-        }
-
-        else if(option.equals("작성자")) {
+        } else if (option.equals("작성자")) {
             System.out.println(" 작성자로 검색 ");
-            boardList = boardRepository.findByWriterContaining(keyword,pageable);
+            boardList = boardRepository.findByWriterContaining(keyword, pageable);
             listContent = boardList.getContent();
-        }
-
-
-        else {
-            boardList = boardRepository.findAll(pageable);
+        } else {
+            boardList = boardRepository.findByCategory(category, pageable);
             listContent = boardList.getContent();
 
         }
@@ -61,11 +60,11 @@ public class BoardService {
 
         int totalPage = boardList.getTotalPages();
         /*  시작페이지 1 / 11 / 21 ...   */
-        int startPage = (int) ((Math.floor(pageNo / 11) * 10) + 1
-                <= totalPage ? (Math.floor(pageNo / 11) * 10) + 1 : totalPage);
+        int startPage = (int) ((Math.floor(pageNo / 6) * 5) + 1
+                <= totalPage ? (Math.floor(pageNo / 6) * 5) + 1 : totalPage);
 
-        /*  한 nav 당 페이지 개수 : 10 / 20 / 30...   */
-        int endPage = (startPage + 10 - 1 < totalPage ? startPage + 10 - 1 : totalPage);
+        /*  한 nav 당 페이지 개수 : 5 / 10 / 15...   */
+        int endPage = (startPage + 5 - 1 < totalPage ? startPage + 5 - 1 : totalPage);
         System.out.println("endPage = " + endPage);
 
         boolean hasPrev = boardList.hasPrevious();
@@ -75,7 +74,7 @@ public class BoardService {
         int nextIndex = boardList.nextOrLastPageable().getPageNumber() + 1;
 
         map.put("pagination", new Pagination(totalPage, startPage, endPage, hasPrev, hasNext, prevIndex, nextIndex));
-        System.out.println("페이지네이션="+map.get("pagination"));
+        System.out.println("페이지네이션=" + map.get("pagination"));
 
         return map;
     }
@@ -92,21 +91,52 @@ public class BoardService {
         return board;
     }
 
+    public Users getUserInfo(Authentication authentication) {
+        Long username = Long.valueOf(authentication.getName());
+
+        Optional<Users> findUser = usersRepository.findById(username);
+        if (findUser.isPresent()) {
+            Users user = findUser.get();
+            return user;
+        }
+        throw new RuntimeException("회원정보를 찾을 수 없습니다.");
+    }
+
     /* ------------------ 글쓰기 ------------------*/
-    public Board save(String username, Board board) {
+    @Transactional
+    public Board save(Authentication authentication, Board board) {
         /* 작성자 set */
-        board.setWriter(username);
+        Users user = getUserInfo(authentication);
+        String writer = user.getEmail();
+        board.setWriter(writer);
+
         return boardRepository.save(board);
+
     }
 
     /* ------------------ 글삭제 ------------------*/
-    public void deletePost(Long pno) {
-        boardRepository.deleteById(pno);
+    public boolean delete(Authentication authentication, Long pno) {
+        Users user = getUserInfo(authentication);
+        String requestUser = user.getEmail();
+        System.out.println("requestUser = " + requestUser);
+        String writer = null;
 
+        Optional<Board> findPost = boardRepository.findById(pno);
+        if (findPost.isPresent()) {
+            Board getWriter = findPost.get();
+            writer = getWriter.getWriter();
+        }
+        if (requestUser.equals(writer)) {
+            boardRepository.deleteById(pno);
+            System.out.println("writer = " + writer);
+            System.out.println("requestUser = " + requestUser);
+            return true;
+        }
+        return false;
     }
 
     /* ------------------ 글수정 ------------------*/
-    public Board modifyPost(Board board) {
+    public Board modify(Board board) {
         System.out.println("board = " + board);
         return boardRepository.save(board);
     }

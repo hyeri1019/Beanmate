@@ -1,24 +1,22 @@
 package nyang.cat.board.controller;
 
 import lombok.RequiredArgsConstructor;
-import nyang.cat.board.dto.Pagination;
 import nyang.cat.board.dto.SearchHandler;
 import nyang.cat.board.entity.Board;
+import nyang.cat.board.repository.BoardRepository;
 import nyang.cat.board.service.BoardService;
-import org.springframework.data.domain.Page;
+import nyang.cat.multipart.FileUtil;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -26,12 +24,14 @@ import java.util.*;
 public class BoardController {
 
     private final BoardService boardService;
+    private final BoardRepository boardRepository;
 
     /*   모든 게시글 목록 (페이징)   */
     @GetMapping("/boards")
-    public ResponseEntity<Map<String, Object>> readBoardList(@PageableDefault(size = 10, sort = "pno",
+    public ResponseEntity<Map<String, Object>> readBoardList(@PageableDefault(size = 4, sort = "pno",
             direction = Sort.Direction.DESC) Pageable pageable,
                                                              @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+                                                             @RequestParam(required = false, defaultValue = "main", value = "category") String category,
                                                              @RequestParam(required = false,  value="option") String option,
                                                              @RequestParam(required = false,  value="keyword") String keyword, SearchHandler sc) {
 
@@ -39,58 +39,90 @@ public class BoardController {
         System.out.println(" option "+option);
         System.out.println("keyword = " + keyword);
         System.out.println("sc = " + sc);
+        System.out.println("category = " + category);
 
-        Map<String, Object> map = boardService.getBoardList(pageable, sc, pageNo);
+        Map<String, Object> map = boardService.getBoardList(pageable, sc, pageNo, category);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
 
-    /*      게시물 읽기      */
     @GetMapping("/board")
     public Object read(@RequestParam("pno") Long pno) {
-
-        return boardService.findPost(pno);
+        try {
+            Board post = boardService.findPost(pno);
+            return post;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("READ ERROR", HttpStatus.BAD_REQUEST);
+        }
     }
+
+    @GetMapping("/feeds")
+    public ResponseEntity<Map<String, Object>> showFeed(@PageableDefault(size = 10, sort = "pno",
+            direction = Sort.Direction.DESC) Pageable pageable,
+                                                             @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+                                                             @RequestParam(required = false, defaultValue = "main", value = "category") String category,
+                                                             @RequestParam(required = false,  value="option") String option,
+                                                             @RequestParam(required = false,  value="keyword") String keyword, SearchHandler sc) {
+
+        Map<String, Object> map = boardService.getBoardList(pageable, sc, pageNo, category);
+        return new ResponseEntity<>(map, HttpStatus.OK);
+    }
+
 
     /*     게시물 작성      */
     @PostMapping("/board")
-    public Object write(@RequestBody Board board) {
+                        /* RequestBody 로는 이미지파일을 못받아서 수정*/
+    public Object write(Authentication authentication,
+                        @RequestParam("title") String title,
+                        @RequestParam("content") String content,
+                        @RequestParam("category") String category,
+                        @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
+        if(authentication != null) {
+            Board board = new Board();
+            board.setTitle(title);
+            board.setContent(content);
+            board.setCategory(category);
+            System.out.println("category? = " + category);
 
-        System.out.println("board write = " + board);
-        String username = "asdf";
-        System.out.println(" board post ");
-        return boardService.save(username, board);
+            if(file != null) {
+
+                /* 저장할 파일 이름 */
+                String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+                /* 저장할 경로 */
+                String filePath = System.getProperty("user.dir") + "/src/main/resources/static/uploads/" + fileName;
+                /* 파일 저장 */
+                file.transferTo(new File(filePath));
+                board.setImageName(fileName);
+                board.setImagePath(filePath+fileName);
+            }
+            return boardService.save(authentication, board);
+
+        }
+        return new ResponseEntity<>("AUTH_ERR", HttpStatus.BAD_REQUEST);
     }
-
-//    @PostMapping("/board")
-//    public String write(@Valid Board board, Model model, BindingResult bindingResult, RedirectAttributes redirect,
-//            /* 토큰 인증이 된 주체를 가져옴 */
-//                        Authentication authentication) {
-//
-//        String username = authentication.getName();
-//        try {
-//            boardService.save(username, board);
-//            model.addAttribute(board);
-//            redirect.addFlashAttribute("message", "write ok");
-//            return "redirect:/board";
-//        } catch (Exception e) {
-//            model.addAttribute("message", "write failed");
-//            return "boardList";
-//        }
-//    }
 
     /*    게시물 삭제    */
     @DeleteMapping("/board")
-    public void delete(@RequestParam Long pno) {
-        System.out.println("pno = " + pno);
-        boardService.deletePost(pno);
+    public Object delete(@RequestParam Long pno, Authentication authentication) {
+        if (authentication != null) {
+            try {
+                boolean delete = boardService.delete(authentication, pno);
 
+                if (delete)
+                    return new ResponseEntity<>("DELETE_OK", HttpStatus.OK);
+
+            } catch (Exception e) {
+                return new ResponseEntity<>("DELETE_ERR", HttpStatus.BAD_REQUEST);
+            }
+        }
+        return new ResponseEntity<>("AUTH_ERR", HttpStatus.BAD_REQUEST);
     }
 
     /*    게시물 수정    */
     @PatchMapping("/board")
     public Object modify(@RequestParam Long pno, @RequestBody Board board) {
        board.setPno(pno);
-        return boardService.modifyPost(board);
+        return boardService.modify(board);
     }
 
 

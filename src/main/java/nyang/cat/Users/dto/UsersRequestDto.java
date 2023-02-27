@@ -1,12 +1,11 @@
-package nyang.cat.dto;
+package nyang.cat.Users.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import nyang.cat.entity.SecurityUsers;
-import nyang.cat.entity.Authority;
-import nyang.cat.entity.Users;
+import nyang.cat.Users.entity.Users;
+import nyang.cat.jwt.Authority;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 

@@ -1,4 +1,4 @@
-package nyang.cat.entity;
+package nyang.cat.jwt;
 
 
 import lombok.Getter;

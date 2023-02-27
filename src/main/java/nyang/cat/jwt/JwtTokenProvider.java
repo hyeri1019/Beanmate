@@ -2,11 +2,6 @@ package nyang.cat.jwt;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import nyang.cat.dto.JwtDto;
-import nyang.cat.dto.JwtRequestDto;
-import nyang.cat.service.AuthService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
-import java.net.http.HttpResponse;
 import java.security.Key;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -26,7 +20,7 @@ public class JwtTokenProvider {
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 1;            // 1시간
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;            // 1시간
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
 
     private static byte[] keyBytes  = Keys.secretKeyFor(SignatureAlgorithm.HS512).getEncoded();
@@ -84,7 +78,6 @@ public class JwtTokenProvider {
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        System.out.println("authorities = " + authorities);
 
         /* 인증 주체 */
         UserDetails principal = new User(claims.getSubject(), "", authorities);
@@ -97,6 +90,7 @@ public class JwtTokenProvider {
         System.out.println(" 토큰 검증 ");
         try {
         Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+            System.out.println(" 인증 ");
             return 0;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             e.printStackTrace();

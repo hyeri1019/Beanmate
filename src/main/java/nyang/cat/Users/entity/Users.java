@@ -1,14 +1,16 @@
-package nyang.cat.entity;
+package nyang.cat.Users.entity;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.springframework.security.core.userdetails.UserDetails;
+import nyang.cat.jwt.Authority;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
+@Setter
 @ToString
 public class Users {
 
@@ -22,8 +24,12 @@ public class Users {
 
     private String password;
 
+
     @Enumerated(EnumType.STRING)
     private Authority authority;
+
+
+
 
     @Builder
     public Users(Long userSeq, String email, String password, Authority authority) {

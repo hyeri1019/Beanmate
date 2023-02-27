@@ -71,7 +71,7 @@ public class SecurityConfiguration {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth/**", "/boards","/board/**").permitAll()
+                .antMatchers("/auth/**", "/boards","/board/**","/uploads/**","/feeds/**").permitAll()
 //                .antMatchers("/me").hasAnyAuthority("ROLE_USER")
 
                 .anyRequest().authenticated()

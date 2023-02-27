@@ -1,7 +1,6 @@
 package nyang.cat.repository;
 
-import nyang.cat.entity.SecurityUsers;
-import nyang.cat.entity.Users;
+import nyang.cat.Users.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,12 +1,11 @@
-package nyang.cat.service;
+package nyang.cat.Users.service;
 
 import lombok.RequiredArgsConstructor;
-import nyang.cat.dto.JwtDto;
-import nyang.cat.dto.JwtRequestDto;
-import nyang.cat.dto.UsersRequestDto;
-import nyang.cat.dto.UsersResponseDto;
-import nyang.cat.entity.SecurityUsers;
-import nyang.cat.entity.Users;
+import nyang.cat.Users.dto.UsersRequestDto;
+import nyang.cat.Users.dto.UsersResponseDto;
+import nyang.cat.Users.entity.Users;
+import nyang.cat.jwt.JwtDto;
+import nyang.cat.jwt.JwtRequestDto;
 import nyang.cat.jwt.JwtTokenProvider;
 import nyang.cat.jwt.RefreshToken;
 import nyang.cat.jwt.RefreshTokenRepository;
@@ -96,12 +95,14 @@ public class AuthService {
 
             // 5.  access / refresh 토큰 재발급
             JwtDto tokenDto = tokenProvider.generateToken(authentication);
+            System.out.println("accessToken 재발급 + refreshToken 업데이트 " + tokenDto);
 
             System.out.println(" 냐아아아앙 ");
 
             // 6. 저장소 정보 업데이트
             RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
             refreshTokenRepository.save(newRefreshToken);
+
 
 
             // 토큰 발급

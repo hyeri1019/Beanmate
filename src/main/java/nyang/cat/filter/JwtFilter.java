@@ -1,10 +1,7 @@
 package nyang.cat.filter;
 
 import lombok.RequiredArgsConstructor;
-import nyang.cat.dto.JwtDto;
-import nyang.cat.dto.JwtRequestDto;
 import nyang.cat.jwt.JwtTokenProvider;
-import nyang.cat.jwt.RefreshToken;
 import nyang.cat.jwt.RefreshTokenRepository;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,20 +29,21 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException, IOException {
 
         // 1. Request Header 에서 토큰을 꺼냄
-        String token = resolveToken(request);
-        System.out.println("Request Header 에서 가져온 access token = " + token);
-
         // 2. validateToken 으로 토큰 유효성 검사
         // 정상 토큰이면 Authentication 을  SecurityContext 에 저장 (해당 사용자 인증 처리)
-        if (StringUtils.hasText(token) && tokenProvider.tokenValidation(token)==0) {
-            Authentication authentication = tokenProvider.getAuthentication(token);
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            System.out.println(" 유효한 토큰입니다. ");
+        try {
+            String token = resolveToken(request);
+            if (StringUtils.hasText(token) && tokenProvider.tokenValidation(token)==0) {
+                Authentication authentication = tokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                System.out.println(" 유효한 토큰입니다. ");
+            }
+            filterChain.doFilter(request, response);
+        } finally {
+            SecurityContextHolder.clearContext();
         }
-        /* 다음 필터 호출 */
-        filterChain.doFilter(request, response);
-
     }
+
 
     // Request Header 에서 토큰 정보를 꺼내오기
     private String resolveToken(HttpServletRequest request) {

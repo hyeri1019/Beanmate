@@ -1,4 +1,4 @@
-package nyang.cat.dto;
+package nyang.cat.jwt;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
