@@ -9,7 +9,7 @@ import nyang.cat.jwt.JwtRequestDto;
 import nyang.cat.jwt.JwtTokenProvider;
 import nyang.cat.jwt.RefreshToken;
 import nyang.cat.jwt.RefreshTokenRepository;
-import nyang.cat.repository.UsersRepository;
+import nyang.cat.Users.repository.UsersRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;

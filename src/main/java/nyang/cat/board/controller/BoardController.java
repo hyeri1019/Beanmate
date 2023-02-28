@@ -60,10 +60,11 @@ public class BoardController {
     public ResponseEntity<Map<String, Object>> showFeed(@PageableDefault(size = 10, sort = "pno",
             direction = Sort.Direction.DESC) Pageable pageable,
                                                              @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
-                                                             @RequestParam(required = false, defaultValue = "main", value = "category") String category,
+                                                             @RequestParam(required = false, defaultValue = "post", value = "category") String category,
                                                              @RequestParam(required = false,  value="option") String option,
                                                              @RequestParam(required = false,  value="keyword") String keyword, SearchHandler sc) {
 
+        System.out.println("category = " + category);
         Map<String, Object> map = boardService.getBoardList(pageable, sc, pageNo, category);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }

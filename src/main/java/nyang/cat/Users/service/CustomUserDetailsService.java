@@ -2,7 +2,7 @@ package nyang.cat.Users.service;
 
 import lombok.RequiredArgsConstructor;
 import nyang.cat.Users.entity.Users;
-import nyang.cat.repository.UsersRepository;
+import nyang.cat.Users.repository.UsersRepository;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

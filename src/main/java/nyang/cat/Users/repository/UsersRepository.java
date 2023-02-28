@@ -1,4 +1,4 @@
-package nyang.cat.repository;
+package nyang.cat.Users.repository;
 
 import nyang.cat.Users.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;

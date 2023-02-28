@@ -6,7 +6,7 @@ import nyang.cat.board.dto.SearchHandler;
 import nyang.cat.board.entity.Board;
 import nyang.cat.board.repository.BoardRepository;
 import nyang.cat.Users.entity.Users;
-import nyang.cat.repository.UsersRepository;
+import nyang.cat.Users.repository.UsersRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -35,7 +35,7 @@ public class BoardService {
         Page<Board> boardList = null;
         List<Board> listContent = null;
 
-        if(category.equals("main")){
+        if(category.equals("post")){
             boardList = boardRepository.findAll(pageable);
             listContent = boardList.getContent();
         }

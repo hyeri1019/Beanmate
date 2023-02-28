@@ -40,6 +40,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
             filterChain.doFilter(request, response);
         } finally {
+            System.out.println(" clear context ");
             SecurityContextHolder.clearContext();
         }
     }
