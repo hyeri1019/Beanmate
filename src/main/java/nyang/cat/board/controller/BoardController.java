@@ -35,12 +35,6 @@ public class BoardController {
                                                              @RequestParam(required = false,  value="option") String option,
                                                              @RequestParam(required = false,  value="keyword") String keyword, SearchHandler sc) {
 
-        System.out.println(" pageNo "+pageNo);
-        System.out.println(" option "+option);
-        System.out.println("keyword = " + keyword);
-        System.out.println("sc = " + sc);
-        System.out.println("category = " + category);
-
         Map<String, Object> map = boardService.getBoardList(pageable, sc, pageNo, category);
         return new ResponseEntity<>(map, HttpStatus.OK);
     }
@@ -64,11 +58,10 @@ public class BoardController {
                                                              @RequestParam(required = false,  value="option") String option,
                                                              @RequestParam(required = false,  value="keyword") String keyword, SearchHandler sc) {
 
-        System.out.println("category = " + category);
-        Map<String, Object> map = boardService.getBoardList(pageable, sc, pageNo, category);
-        return new ResponseEntity<>(map, HttpStatus.OK);
+            System.out.println("category = " + category);
+            Map<String, Object> map = boardService.getBoardList(pageable, sc, pageNo, category);
+            return new ResponseEntity<>(map, HttpStatus.OK);
     }
-
 
     /*     게시물 작성      */
     @PostMapping("/board")
@@ -86,7 +79,6 @@ public class BoardController {
             System.out.println("category? = " + category);
 
             if(file != null) {
-
                 /* 저장할 파일 이름 */
                 String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
                 /* 저장할 경로 */
@@ -96,7 +88,6 @@ public class BoardController {
                 board.setImageName(fileName);
             }
             return boardService.save(authentication, board);
-
         }
         return new ResponseEntity<>("AUTH_ERR", HttpStatus.BAD_REQUEST);
     }
@@ -124,6 +115,4 @@ public class BoardController {
        board.setPno(pno);
         return boardService.modify(board);
     }
-
-
 }

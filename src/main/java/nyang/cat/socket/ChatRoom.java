@@ -1,4 +1,4 @@
-package nyang.socket;
+package nyang.cat.socket;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,5 +1,6 @@
 package nyang.cat.Users.service;
 
+import io.jsonwebtoken.MalformedJwtException;
 import lombok.RequiredArgsConstructor;
 import nyang.cat.Users.entity.Users;
 import nyang.cat.Users.repository.UsersRepository;
@@ -22,23 +23,19 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     @Transactional
-        public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("username = " + username);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
             return usersRepository.findByEmail(username)
                     .map(this::createUserDetails)
                     .orElseThrow(() -> new UsernameNotFoundException(username + " -> 데이터베이스에서 찾을 수 없습니다."));
         }
 
-        // DB 에 User 값이 존재한다면 UserDetails 객체로 만들어서 리턴
-        private UserDetails createUserDetails(Users users) {
-            System.out.println("users????= " + users);
-            GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(users.getAuthority().toString());
-
+    private UserDetails createUserDetails(Users users) {
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(users.getAuthority().toString());
             /*  User 클래스로 사용자 정의(이름,암호,권한)  */
             return new User(
                     String.valueOf(users.getUserSeq()),
                     users.getPassword(),
                     Collections.singleton(grantedAuthority)
             );
-        }
+    }
 }

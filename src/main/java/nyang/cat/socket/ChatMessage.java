@@ -1,13 +1,12 @@
-package nyang.socket;
+package nyang.cat.socket;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import nyang.cat.Users.entity.Users;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
-import java.lang.reflect.Member;
-import java.time.Instant;
 
 @Entity
 @DynamicInsert
@@ -37,6 +36,10 @@ public class ChatMessage {
         this.receiver = receiver;
         this.message = message;
         this.chatRoom = chatRoom;
+    }
+
+    public ChatMessage(String message) {
+        this.message = message;
     }
 
     public ChatMessage() {

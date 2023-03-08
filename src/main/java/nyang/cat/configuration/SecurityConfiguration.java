@@ -72,10 +72,12 @@ public class SecurityConfiguration {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/auth/**", "/boards","/board/**","/uploads/**","/feeds/**"
-                            , "/products/**").permitAll()
+                            , "/products/**","/me").permitAll()
+
 //                .antMatchers("/me").hasAnyAuthority("ROLE_USER")
 
-                .anyRequest().authenticated()
+//                .anyRequest().authenticated()
+
 
                 /* JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용 */
                 .and()

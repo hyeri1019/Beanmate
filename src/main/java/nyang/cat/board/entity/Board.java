@@ -33,14 +33,13 @@ public class Board {
     @Column(nullable=true)
     private int replyCnt;  // 댓글수
 
+    private int likeCnt;
+
 
     private Date regTime; // 등록시간
 
     @Column(nullable=true)
     private String imageName;
-
-    @Column(nullable=true)
-    private String imagePath;
 
 
 

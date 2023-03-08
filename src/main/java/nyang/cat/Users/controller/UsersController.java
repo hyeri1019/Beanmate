@@ -2,6 +2,7 @@ package nyang.cat.Users.controller;
 
 
 import lombok.RequiredArgsConstructor;
+import nyang.cat.Users.dto.UsersRequestDto;
 import nyang.cat.Users.entity.Users;
 import nyang.cat.Users.service.UsersService;
 import org.springframework.security.core.Authentication;
@@ -16,11 +17,14 @@ public class UsersController {
 
     @GetMapping("/me")
     public Object findMemberInfoById(Authentication authentication) {
-        System.out.println("마이페이지  " + authentication);
 
         Users users = usersService.myPage(authentication);
-        System.out.println("users = " + users);
         return users;
+    }
+
+    @PatchMapping("/me")
+    public void update(Authentication authentication, @RequestBody Users user) {
+        usersService.update(authentication, user);
     }
 }
 

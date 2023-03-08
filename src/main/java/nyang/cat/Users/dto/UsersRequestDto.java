@@ -9,6 +9,8 @@ import nyang.cat.jwt.Authority;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Date;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor

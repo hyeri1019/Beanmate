@@ -59,7 +59,7 @@ public class BoardService {
 
 
         int totalPage = boardList.getTotalPages();
-        /*  시작페이지 1 / 11 / 21 ...   */
+        /*  시작페이지 1 / 6 / 11 ...   */
         int startPage = (int) ((Math.floor(pageNo / 6) * 5) + 1
                 <= totalPage ? (Math.floor(pageNo / 6) * 5) + 1 : totalPage);
 

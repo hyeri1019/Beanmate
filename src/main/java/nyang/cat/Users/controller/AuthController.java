@@ -6,6 +6,7 @@ import nyang.cat.Users.dto.UsersResponseDto;
 import nyang.cat.jwt.JwtDto;
 import nyang.cat.jwt.JwtRequestDto;
 import nyang.cat.Users.service.AuthService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +27,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<JwtDto> login(@RequestBody UsersRequestDto usersRequestDto) {
+
         return ResponseEntity.ok(authService.login(usersRequestDto));
     }
 
