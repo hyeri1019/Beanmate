@@ -1,9 +1,6 @@
 package nyang.cat.Users.entity;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import net.bytebuddy.implementation.bytecode.constant.DefaultValue;
 import nyang.cat.jwt.Authority;
 import org.hibernate.annotations.CreationTimestamp;
@@ -22,6 +19,7 @@ import java.util.Date;
 @Setter
 @ToString
 @EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 public class Users {
 
     @Id
@@ -30,16 +28,17 @@ public class Users {
     private Long userSeq; // PK
 
     @Column(unique = true)
-    private String email;  // UQ
+    private String email;
+
+    @Column(unique = true)
+    private String name;
 
     private String password;
 
     @CreatedDate
-    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime createDate;
 
     @LastModifiedDate
-    @Convert(converter = Jsr310JpaConverters.LocalDateTimeConverter.class)
     private LocalDateTime updateDate;
 
     @Enumerated(EnumType.STRING)
@@ -48,14 +47,11 @@ public class Users {
 
 
     @Builder
-    public Users(String email, String password, Authority authority) {
+    public Users(String email, String name, String password, Authority authority) {
         this.email = email;
+        this.name = name;
         this.password = password;
         this.authority = authority;
     }
 
-
-    public Users() {
-
-    }
 }

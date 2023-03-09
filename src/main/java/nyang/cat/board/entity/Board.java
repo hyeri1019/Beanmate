@@ -1,6 +1,7 @@
 package nyang.cat.board.entity;
 
 import lombok.*;
+import nyang.cat.Users.entity.Users;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -11,6 +12,9 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @ToString
 public class Board {
 
@@ -21,6 +25,10 @@ public class Board {
 
     @NotBlank(message = "제목을 입력해주세요.")
     private String title;
+
+    @ManyToOne
+    @JoinColumn(name="user_seq")
+    private Users user;
 
     private String writer;
 
@@ -33,23 +41,19 @@ public class Board {
     @Column(nullable=true)
     private int replyCnt;  // 댓글수
 
-    private int likeCnt;
-
-
     private Date regTime; // 등록시간
 
     @Column(nullable=true)
     private String imageName;
 
-
-
-    public Board(String title, String writer, String content) {
+    @Builder
+    public Board(String title, Users user, String writer, String content, String category) {
         this.title = title;
+        this.user = user;
         this.writer = writer;
         this.content = content;
+        this.category = category;
     }
-
-    public Board(){}
 
     public Board(List<Board> content) {
 
