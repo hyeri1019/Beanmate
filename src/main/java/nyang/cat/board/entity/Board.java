@@ -26,9 +26,12 @@ public class Board {
     @NotBlank(message = "제목을 입력해주세요.")
     private String title;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REFRESH)
     @JoinColumn(name="user_seq")
     private Users user;
+
+    @OneToMany(mappedBy = "pno", cascade = CascadeType.REFRESH) /* Likes 의 Board.pno 참조 */
+    private List<Likes> likesList;
 
     private String writer;
 
@@ -41,21 +44,22 @@ public class Board {
     @Column(nullable=true)
     private int replyCnt;  // 댓글수
 
+    @Column(nullable=true)
+    private int likeCnt;
+
     private Date regTime; // 등록시간
 
     @Column(nullable=true)
     private String imageName;
 
     @Builder
-    public Board(String title, Users user, String writer, String content, String category) {
+    public Board(String title, Users user, String writer, String content, String category, int likeCnt) {
         this.title = title;
         this.user = user;
         this.writer = writer;
         this.content = content;
         this.category = category;
+        this.likeCnt = likeCnt;
     }
 
-    public Board(List<Board> content) {
-
-    }
 }

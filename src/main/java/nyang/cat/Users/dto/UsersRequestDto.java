@@ -18,11 +18,14 @@ import java.util.Date;
 public class UsersRequestDto {
 
     private String email;
+    private String name;
     private String password;
+
 
     public Users toMember(PasswordEncoder passwordEncoder) {
         return Users.builder()
                 .email(email)
+                .name(name)
                 .password(passwordEncoder.encode(password))
                 .authority(Authority.ROLE_USER)
                 .build();

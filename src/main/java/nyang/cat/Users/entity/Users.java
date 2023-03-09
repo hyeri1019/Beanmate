@@ -45,7 +45,6 @@ public class Users {
     private Authority authority;
 
 
-
     @Builder
     public Users(String email, String name, String password, Authority authority) {
         this.email = email;

@@ -96,7 +96,6 @@ public class BoardController {
     /*    게시물 수정    */
     @PatchMapping("/board")
     public Object modify(@RequestBody Board board, Authentication authentication) {
-        System.out.println("board = " + board);
-        return boardService.modify(board);
+        return boardService.modify(board, authentication);
     }
 }

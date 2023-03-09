@@ -85,7 +85,8 @@ public class BoardService {
 
     /* ------------------ 글읽기 ------------------*/
     public Board findPost(Long pno) {
-        Board board = boardRepository.findById(pno).orElseThrow(() -> new RuntimeException(String.valueOf(pno)));
+        Board board = boardRepository.findById(pno)
+                .orElseThrow(() -> new RuntimeException(String.valueOf(pno)));
 
         /* 클릭하면 조회수 증가 */
         int viewCnt = board.getViewCnt();
@@ -137,7 +138,6 @@ public class BoardService {
     public boolean delete(Authentication authentication, Long pno) {
         Users user = getUserInfo(authentication);
         String requestUser = user.getEmail();
-        System.out.println("requestUser = " + requestUser);
         String writer = null;
 
         Optional<Board> findPost = boardRepository.findById(pno);
@@ -147,16 +147,23 @@ public class BoardService {
         }
         if (requestUser.equals(writer)) {
             boardRepository.deleteById(pno);
-            System.out.println("writer = " + writer);
-            System.out.println("requestUser = " + requestUser);
             return true;
         }
         return false;
     }
 
     /* ------------------ 글수정 ------------------*/
-    public Board modify(Board board) {
-        return boardRepository.save(board);
+    public boolean modify(Board board, Authentication authentication) {
+        Users user = getUserInfo(authentication);
+
+        String requestUser = user.getEmail();
+        String writer = board.getUser().getEmail();
+
+        if (requestUser.equals(writer)) {
+            boardRepository.save(board);
+            return true;
+        }
+        return false;
     }
 
 }
