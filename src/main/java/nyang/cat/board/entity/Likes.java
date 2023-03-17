@@ -3,6 +3,7 @@ package nyang.cat.board.entity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import net.bytebuddy.implementation.bytecode.constant.DefaultValue;
 import nyang.cat.Users.entity.Users;
 
@@ -23,7 +24,7 @@ public class Likes {
     @JoinColumn(name="user_seq")
     private Users user;
 
-    @ManyToOne(cascade = CascadeType.REFRESH)
+    @ManyToOne
     @JoinColumn(name = "pno")
     private Board pno;
 

@@ -1,6 +1,7 @@
 package nyang.cat.board.service;
 
 import lombok.RequiredArgsConstructor;
+import nyang.cat.Users.service.UsersService;
 import nyang.cat.board.dto.Pagination;
 import nyang.cat.board.dto.SearchHandler;
 import nyang.cat.board.entity.Board;
@@ -24,6 +25,7 @@ public class BoardService {
 
     private final BoardRepository boardRepository;
     private final UsersRepository usersRepository;
+    private final UsersService usersService;
 
 
     /* ------------------ 페이징 ------------------*/
@@ -96,22 +98,11 @@ public class BoardService {
         return board;
     }
 
-    public Users getUserInfo(Authentication authentication) {
-        Long username = Long.valueOf(authentication.getName());
-
-        Optional<Users> findUser = usersRepository.findById(username);
-        if (findUser.isPresent()) {
-            Users user = findUser.get();
-            return user;
-        }
-        throw new RuntimeException("회원정보를 찾을 수 없습니다.");
-    }
-
     /* ------------------ 글쓰기 ------------------*/
     @Transactional
     public Board save(Authentication authentication, String title, String content, String category, MultipartFile file) throws IOException {
-        Users user = getUserInfo(authentication);
-
+        Users user = usersService.getUserInfo(authentication);
+        
         Board board = Board.builder()
                 .title(title)
                 .user(user)
@@ -130,13 +121,15 @@ public class BoardService {
             board.setImageName(fileName);
         }
 
+        System.out.println("board = " + board);
+
         return boardRepository.save(board);
 
     }
 
     /* ------------------ 글삭제 ------------------*/
     public boolean delete(Authentication authentication, Long pno) {
-        Users user = getUserInfo(authentication);
+        Users user = usersService.getUserInfo(authentication);
         String requestUser = user.getEmail();
         String writer = null;
 
@@ -154,7 +147,7 @@ public class BoardService {
 
     /* ------------------ 글수정 ------------------*/
     public boolean modify(Board board, Authentication authentication) {
-        Users user = getUserInfo(authentication);
+        Users user = usersService.getUserInfo(authentication);
 
         String requestUser = user.getEmail();
         String writer = board.getUser().getEmail();

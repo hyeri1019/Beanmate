@@ -1,6 +1,7 @@
 package nyang.cat.configuration;
 
 import lombok.RequiredArgsConstructor;
+import nyang.cat.Users.service.CustomOAuth2UserService;
 import nyang.cat.jwt.JwtTokenProvider;
 import nyang.cat.jwt.RefreshTokenRepository;
 import org.springframework.beans.factory.InitializingBean;
@@ -35,6 +36,7 @@ public class SecurityConfiguration {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public InitializingBean initializingBean() {
@@ -57,6 +59,8 @@ public class SecurityConfiguration {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+                .oauth2Login()
+                .and()
                 .csrf().disable()
                 .exceptionHandling()
 
@@ -71,17 +75,23 @@ public class SecurityConfiguration {
 
                 .and()
                 .authorizeRequests()
-                .antMatchers("/auth/**", "/boards","/board/**","/uploads/**","/feeds/**"
-                            , "/products/**","/me").permitAll()
+                .anyRequest().permitAll()
+//               .antMatchers().authenticated()
+//			     .antMatchers("게시물등").hasRole(Role.USER.name()) // 특정 ROLE을 가진 사용자만 접근 가능하도록 설정
 
-//                .antMatchers("/me").hasAnyAuthority("ROLE_USER")
-
-//                .anyRequest().authenticated()
 
 
                 /* JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용 */
                 .and()
-                .apply(new JwtSecurityConfiguration(jwtTokenProvider,refreshTokenRepository));
+                .apply(new JwtSecurityConfiguration(jwtTokenProvider,refreshTokenRepository))
+
+                .and()
+                .logout()
+                .logoutSuccessUrl("/")
+                .and()
+                .oauth2Login()
+                .userInfoEndpoint()
+                .userService(customOAuth2UserService);
 
         return http.build();
     }

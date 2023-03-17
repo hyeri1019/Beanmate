@@ -10,9 +10,12 @@ import nyang.cat.Users.entity.Users;
 @NoArgsConstructor
 public class UsersResponseDto {
     private String email;
+    private String name;
+
 
     public static UsersResponseDto of(Users users) {
-        return new UsersResponseDto(users.getEmail());
+
+        return new UsersResponseDto(users.getEmail(), users.getName());
     }
 
 }

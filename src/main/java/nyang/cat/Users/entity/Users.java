@@ -1,25 +1,25 @@
 package nyang.cat.Users.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
-import net.bytebuddy.implementation.bytecode.constant.DefaultValue;
 import nyang.cat.jwt.Authority;
-import org.hibernate.annotations.CreationTimestamp;
+import nyang.cat.patron.entity.Creator;
+import nyang.cat.patron.entity.Subscription;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
 @Setter
-@ToString
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
+@AllArgsConstructor
 public class Users {
 
     @Id
@@ -44,6 +44,12 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Creator creator;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Subscription> subscriptions = new ArrayList<>();
 
     @Builder
     public Users(String email, String name, String password, Authority authority) {
@@ -52,5 +58,6 @@ public class Users {
         this.password = password;
         this.authority = authority;
     }
+
 
 }

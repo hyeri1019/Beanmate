@@ -12,6 +12,7 @@ import java.util.Optional;
 @Repository
 public interface BoardRepository extends JpaRepository<Board, Long> {
     Page<Board> findByCategory(String category, Pageable pageable);
+    Page<Board> findByWriter(String writer, Pageable pageable);
     /*  Containing == Like */
     Page<Board> findByTitleContaining(String keyword, Pageable pageable);
     Page<Board> findByTitleContainingOrContentContaining(String titleKeyword, String contentKeyword, Pageable pageable);

@@ -3,10 +3,12 @@ package nyang.cat.board.service;
 import lombok.RequiredArgsConstructor;
 import nyang.cat.Users.entity.Users;
 import nyang.cat.Users.repository.UsersRepository;
+import nyang.cat.Users.service.UsersService;
 import nyang.cat.board.entity.Board;
 import nyang.cat.board.entity.Likes;
 import nyang.cat.board.repository.BoardRepository;
 import nyang.cat.board.repository.LikesRepository;
+import org.apache.catalina.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +21,12 @@ import java.util.Optional;
 public class LikesService {
 
     private final LikesRepository likesRepository;
-    private final BoardService boardService;
+    private final UsersService usersService;
     private final BoardRepository boardRepository;
 
 
     public boolean isLiked(Long pno, Authentication authentication) {
-        Users user = boardService.getUserInfo(authentication);
+        Users user = usersService.getUserInfo(authentication);
         Board board = boardRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException(String.valueOf(pno)));
         Optional<Likes> likes = likesRepository.findByPnoAndUser(board, user);
@@ -34,7 +36,7 @@ public class LikesService {
 
     @Transactional
     public Boolean increase(Long pno, Authentication authentication) {
-        Users user = boardService.getUserInfo(authentication);
+        Users user = usersService.getUserInfo(authentication);
         Board board = boardRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException(String.valueOf(pno)));
 
