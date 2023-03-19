@@ -1,10 +1,7 @@
 package nyang.cat.patron.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -14,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class PatronTier {
 
     @Id
@@ -34,7 +32,12 @@ public class PatronTier {
 
     @JsonIgnore
     @OneToMany(mappedBy = "patronTier")
+    @ToString.Exclude
     private List<Subscription> subscriptions;
+
+    public void setSubscriptions(List<Subscription> subscriptions) {
+        this.subscriptions = subscriptions;
+    }
 
     @Builder
     public PatronTier(Creator creator, String tier, Long amount, String benefits) {

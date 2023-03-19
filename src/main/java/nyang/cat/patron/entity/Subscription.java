@@ -24,10 +24,6 @@ public class Subscription {
     @JoinColumn(name = "patron_tier_id")
     private PatronTier patronTier;
 
-//    private LocalDateTime subscriptionStartDate;
-//    private LocalDateTime subscriptionEndDate;
-
-
     @Builder
     public Subscription(Users user, PatronTier patronTier) {
         this.user = user;

@@ -25,9 +25,10 @@ public class PatronTierService {
     public void registerTier(List<PatronTier> tiers, Authentication authentication) {
         Users user = usersService.getUserInfo(authentication);
         tiers.forEach(tier -> {
+
                     PatronTier patronTier = PatronTier.builder()
                             .creator(user.getCreator())
-                            .tier(tier.getTier())
+                            .tier(user.getName()+tier.getTier())
                             .amount(tier.getAmount())
                             .benefits(tier.getBenefits())
                             .subscriptions(tier.getSubscriptions())

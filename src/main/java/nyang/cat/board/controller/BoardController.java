@@ -5,13 +5,13 @@ import nyang.cat.board.dto.SearchHandler;
 import nyang.cat.board.entity.Board;
 import nyang.cat.board.repository.BoardRepository;
 import nyang.cat.board.service.BoardService;
-import nyang.cat.multipart.FileUtil;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,14 +38,20 @@ public class BoardController {
     }
 
     @GetMapping("/board")
-    public Object read(@RequestParam("pno") Long pno) {
-        try {
-            Board post = boardService.findPost(pno);
-            System.out.println("post = " + post);
-            return post;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<>("READ ERROR", HttpStatus.BAD_REQUEST);
+    public Object read(@RequestParam("pno") Long pno, Authentication authentication) {
+
+        Board post = boardService.findPost(pno);
+
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        System.out.println("authorities ==== " + authorities);
+
+        String requiredAuthority = "ROLE_"+post.getWriter()+post.getAuthLevel();
+        boolean hasAccess = authorities.stream().anyMatch(authority -> authority.getAuthority().equals(requiredAuthority));
+
+        if(hasAccess) {
+            return ResponseEntity.ok(post);
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당 게시물의 권한이 없습니다.");
         }
     }
 
@@ -68,10 +74,11 @@ public class BoardController {
                         @RequestParam("title") String title,
                         @RequestParam("content") String content,
                         @RequestParam("category") String category,
+                        @RequestParam("authLevel") String authLevel,
                         @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
 
         if(authentication != null) {
-            return boardService.save(authentication, title, content, category, file);
+            return boardService.save(authentication, title, content, category, authLevel, file);
         }
         return new ResponseEntity<>("AUTH_ERR", HttpStatus.BAD_REQUEST);
     }

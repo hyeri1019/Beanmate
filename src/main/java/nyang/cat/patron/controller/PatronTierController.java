@@ -21,6 +21,7 @@ public class PatronTierController {
 
     @PostMapping("/tier")
     public void registerTier(@RequestBody List<PatronTier> tier, Authentication authentication) {
+        System.out.println("tier = " + tier);
         patronTierService.registerTier(tier, authentication);
     }
 

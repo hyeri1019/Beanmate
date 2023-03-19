@@ -100,26 +100,28 @@ public class BoardService {
 
     /* ------------------ 글쓰기 ------------------*/
     @Transactional
-    public Board save(Authentication authentication, String title, String content, String category, MultipartFile file) throws IOException {
+    public Board save(Authentication authentication, String title, String content, String category, String authLevel, MultipartFile file) throws IOException {
         Users user = usersService.getUserInfo(authentication);
-        
+        String fileName = null;
+
+        if(file != null) {
+            /* 저장할 파일 이름 */
+            fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+            /* 저장할 경로 */
+            String filePath = System.getProperty("user.dir") + "/src/main/resources/static/uploads/" + fileName;
+            /* 파일 저장 */
+            file.transferTo(new File(filePath));
+        }
+
         Board board = Board.builder()
                 .title(title)
                 .user(user)
                 .writer(user.getName())
                 .content(content)
                 .category(category)
+                .authLevel(authLevel)
+                .imageName(fileName)
                 .build();
-
-        if(file != null) {
-            /* 저장할 파일 이름 */
-            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
-            /* 저장할 경로 */
-            String filePath = System.getProperty("user.dir") + "/src/main/resources/static/uploads/" + fileName;
-            /* 파일 저장 */
-            file.transferTo(new File(filePath));
-            board.setImageName(fileName);
-        }
 
         System.out.println("board = " + board);
 

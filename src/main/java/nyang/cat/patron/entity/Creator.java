@@ -1,10 +1,7 @@
 package nyang.cat.patron.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import nyang.cat.Users.entity.Users;
 
 import javax.persistence.*;
@@ -12,6 +9,7 @@ import java.util.List;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -30,6 +28,9 @@ public class Creator {
     private String name;
 
     private String about;
+
+    @Column(nullable=true)
+    private String profileBackground;
 
     @JsonIgnore
     @OneToMany(mappedBy = "creator")

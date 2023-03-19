@@ -3,9 +3,13 @@ package nyang.cat.board.entity;
 import lombok.*;
 import nyang.cat.Users.entity.Users;
 import org.hibernate.annotations.ColumnDefault;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -15,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString
+@EntityListeners(AuditingEntityListener.class)
 public class Board {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,10 +51,16 @@ public class Board {
     @Column(nullable=true)
     private int likeCnt;
 
-    private Date regTime; // 등록시간
-
     @Column(nullable=true)
     private String imageName;
+
+    private String authLevel;
+
+    @CreatedDate
+    private LocalDateTime createDate;
+
+    @LastModifiedDate
+    private LocalDateTime updateDate;
 
     @Builder
     public Board(String title, Users user, String writer, String content, String category, int likeCnt) {

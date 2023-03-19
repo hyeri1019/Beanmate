@@ -1,7 +1,6 @@
 package nyang.cat.configuration;
 
 import lombok.RequiredArgsConstructor;
-import nyang.cat.Users.service.CustomOAuth2UserService;
 import nyang.cat.jwt.JwtTokenProvider;
 import nyang.cat.jwt.RefreshTokenRepository;
 import org.springframework.beans.factory.InitializingBean;
@@ -36,7 +35,6 @@ public class SecurityConfiguration {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public InitializingBean initializingBean() {
@@ -83,15 +81,7 @@ public class SecurityConfiguration {
 
                 /* JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용 */
                 .and()
-                .apply(new JwtSecurityConfiguration(jwtTokenProvider,refreshTokenRepository))
-
-                .and()
-                .logout()
-                .logoutSuccessUrl("/")
-                .and()
-                .oauth2Login()
-                .userInfoEndpoint()
-                .userService(customOAuth2UserService);
+                .apply(new JwtSecurityConfiguration(jwtTokenProvider,refreshTokenRepository));
 
         return http.build();
     }
