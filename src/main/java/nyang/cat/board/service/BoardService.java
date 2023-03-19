@@ -8,6 +8,8 @@ import nyang.cat.board.entity.Board;
 import nyang.cat.board.repository.BoardRepository;
 import nyang.cat.Users.entity.Users;
 import nyang.cat.Users.repository.UsersRepository;
+import nyang.cat.patron.entity.PatronTier;
+import nyang.cat.patron.repository.PatronTierRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -26,6 +28,7 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UsersRepository usersRepository;
     private final UsersService usersService;
+    private final PatronTierRepository patronTierRepository;
 
 
     /* ------------------ 페이징 ------------------*/
@@ -90,6 +93,7 @@ public class BoardService {
         Board board = boardRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException(String.valueOf(pno)));
 
+
         /* 클릭하면 조회수 증가 */
         int viewCnt = board.getViewCnt();
         board.setViewCnt(viewCnt + 1);
@@ -119,7 +123,7 @@ public class BoardService {
                 .writer(user.getName())
                 .content(content)
                 .category(category)
-                .authLevel(authLevel)
+                .authLevel(user.getName()+"_"+authLevel)
                 .imageName(fileName)
                 .build();
 

@@ -28,7 +28,7 @@ public class PatronTierService {
 
                     PatronTier patronTier = PatronTier.builder()
                             .creator(user.getCreator())
-                            .tier(user.getName()+tier.getTier())
+                            .tier(user.getName()+"_"+tier.getTier())
                             .amount(tier.getAmount())
                             .benefits(tier.getBenefits())
                             .subscriptions(tier.getSubscriptions())

@@ -2,6 +2,7 @@ package nyang.cat.patron.service;
 
 import lombok.RequiredArgsConstructor;
 import nyang.cat.Users.entity.Users;
+import nyang.cat.Users.service.CustomUserDetailsService;
 import nyang.cat.Users.service.UsersService;
 import nyang.cat.patron.entity.Creator;
 import nyang.cat.patron.entity.PatronTier;
@@ -10,8 +11,10 @@ import nyang.cat.patron.repository.CreatorRepository;
 import nyang.cat.patron.repository.PatronTierRepository;
 import nyang.cat.patron.repository.SubscriptionRepository;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +27,9 @@ public class SubscriptionService {
     private final CreatorRepository creatorRepository;
     private final UsersService usersService;
 
+    private final CustomUserDetailsService customUserDetailsService;
+
+    @Transactional
     public void subscription(String creator, String tier, Authentication authentication) {
         Users userInfo = usersService.getUserInfo(authentication);
         Creator getCreator = creatorRepository.findByName(creator).orElse(null);
@@ -37,6 +43,8 @@ public class SubscriptionService {
         System.out.println("subscription =============== " + subscription);
         subscriptionRepository.save(subscription);
 
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        customUserDetailsService.updateUserDetails(userInfo, userDetails);
 
     }
 }

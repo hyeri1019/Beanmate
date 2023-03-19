@@ -48,6 +48,7 @@ public class Users {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Creator creator;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Subscription> subscriptions = new ArrayList<>();
 

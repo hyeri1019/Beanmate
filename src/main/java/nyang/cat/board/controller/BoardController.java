@@ -45,13 +45,14 @@ public class BoardController {
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         System.out.println("authorities ==== " + authorities);
 
-        String requiredAuthority = "ROLE_"+post.getWriter()+post.getAuthLevel();
+        String requiredAuthority = "ROLE_"+post.getAuthLevel();
+        System.out.println("requiredAuthority = " + requiredAuthority);
         boolean hasAccess = authorities.stream().anyMatch(authority -> authority.getAuthority().equals(requiredAuthority));
 
         if(hasAccess) {
             return ResponseEntity.ok(post);
         } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("해당 게시물의 권한이 없습니다.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("FIND_NOT_AUTH");
         }
     }
 

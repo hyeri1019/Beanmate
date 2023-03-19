@@ -2,6 +2,7 @@ package nyang.cat.patron.service;
 
 import lombok.RequiredArgsConstructor;
 import nyang.cat.Users.entity.Users;
+import nyang.cat.Users.service.CustomUserDetailsService;
 import nyang.cat.Users.service.UsersService;
 import nyang.cat.board.dto.Pagination;
 import nyang.cat.board.dto.SearchHandler;
@@ -13,9 +14,11 @@ import nyang.cat.patron.repository.CreatorRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -27,6 +30,8 @@ public class CreatorService {
     private final CreatorRepository creatorRepository;
     private final BoardRepository boardRepository;
     private final UsersService usersService;
+    private final CustomUserDetailsService customUserDetailsService;
+    private final SubscriptionService subscriptionService;
 
 
     public Map<String, Object> creatorPageAndCreatorInfo(String creator, Pageable pageable, SearchHandler sc, int pageNo) {
@@ -62,6 +67,7 @@ public class CreatorService {
 
 
 
+    @Transactional
     public void creatorRegister(String about, MultipartFile profileBackground, Authentication authentication) throws IOException {
         Users user = usersService.getUserInfo(authentication);
         String fileName = null;
