@@ -10,7 +10,6 @@ import javax.persistence.*;
 @DynamicInsert
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -20,18 +19,15 @@ public class ChatMessage {
     @Column(name = "chat_seq")
     private Long id;
 
-    /* Users 실제 사용 시에만 로딩 */
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_user_id")
-    private Users sender;
-
     private String message;
 
+    /* N 메세지 : 1 채팅방 */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
 
-    @Builder
-    public ChatMessage(Users sender, String message) {
-        this.sender = sender;
-        this.message = message;
-    }
+    private String sender;
+
+    private String receiver;
 
 }

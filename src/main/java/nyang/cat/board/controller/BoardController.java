@@ -40,38 +40,23 @@ public class BoardController {
     @GetMapping("/board")
     public Object read(@RequestParam("pno") Long pno, Authentication authentication) {
 
-        Board post = boardService.findPost(pno);
+        Object post = boardService.findPost(pno, authentication);
 
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        System.out.println("authorities ==== " + authorities);
-
-        String requiredAuthority = "ROLE_"+post.getAuthLevel();
-        System.out.println("requiredAuthority = " + requiredAuthority);
-        boolean hasAccess = authorities.stream().anyMatch(authority -> authority.getAuthority().equals(requiredAuthority));
-
-        if(hasAccess) {
-            return ResponseEntity.ok(post);
-        } else {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("FIND_NOT_AUTH");
+        if (post instanceof Boolean) {
+            boolean hasAccess = (boolean) post;
+            System.out.println("hasAccess = " + hasAccess);
+            if (!hasAccess) {
+                return new ResponseEntity<>("해당 게시물에 대한 권한이 없습니다.", HttpStatus.FORBIDDEN);
+            }
         }
-    }
 
-    @GetMapping("/feeds")
-    public ResponseEntity<Map<String, Object>> showFeed(@PageableDefault(size = 10, sort = "pno",
-                                                            direction = Sort.Direction.DESC) Pageable pageable,
-                                                             @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
-                                                             @RequestParam(required = false, defaultValue = "feeds", value = "category") String category,
-                                                             @RequestParam(required = false,  value="option") String option,
-                                                             @RequestParam(required = false,  value="keyword") String keyword, SearchHandler sc) {
-        
-            Map<String, Object> map = boardService.getBoardList(pageable, sc, pageNo, category);
-            return new ResponseEntity<>(map, HttpStatus.OK);
+        return ResponseEntity.ok(post);
     }
 
     /*     게시물 작성      */
     @PostMapping("/board")
                         /* RequestBody 로는 이미지파일을 못받아서 수정*/
-    public Object write(Authentication authentication,
+    public ResponseEntity<Object> write(Authentication authentication,
                         @RequestParam("title") String title,
                         @RequestParam("content") String content,
                         @RequestParam("category") String category,
@@ -79,9 +64,10 @@ public class BoardController {
                         @RequestParam(value = "file", required = false) MultipartFile file) throws IOException {
 
         if(authentication != null) {
-            return boardService.save(authentication, title, content, category, authLevel, file);
+            Board writeResult = boardService.save(authentication, title, content, category, authLevel, file);
+            return ResponseEntity.ok(writeResult); // 200
         }
-        return new ResponseEntity<>("AUTH_ERR", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("AUTH_ERR", HttpStatus.BAD_REQUEST); // 400
     }
 
     /*    게시물 삭제    */

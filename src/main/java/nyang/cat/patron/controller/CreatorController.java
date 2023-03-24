@@ -3,6 +3,7 @@ package nyang.cat.patron.controller;
 import lombok.RequiredArgsConstructor;
 import nyang.cat.board.dto.SearchHandler;
 import nyang.cat.board.entity.Board;
+import nyang.cat.board.service.BoardService;
 import nyang.cat.patron.entity.Creator;
 import nyang.cat.patron.repository.CreatorRepository;
 import nyang.cat.patron.service.CreatorService;
@@ -23,6 +24,7 @@ import java.util.Map;
 public class CreatorController {
 
     private final CreatorService creatorService;
+    private final BoardService boardService;
 
     @GetMapping("/creator")
     public ResponseEntity<Map<String, Object>> showCreatorPageAndCreatorInfo(@PageableDefault(size = 10, sort = "pno",
@@ -30,7 +32,9 @@ public class CreatorController {
                                  @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
                                  @RequestParam(required = true, value = "creator") String creator, SearchHandler sc) {
 
-        Map<String, Object> map = creatorService.creatorPageAndCreatorInfo(creator, pageable, sc, pageNo);
+        Map<String, Object> map = boardService.boardListByCreator(creator, pageable, pageNo);
+        map.put("creatorInfo",creatorService.creatorInfo(creator));
+
         return new ResponseEntity<>(map, HttpStatus.OK);
 
     }
@@ -38,8 +42,11 @@ public class CreatorController {
     @PostMapping("/creator")
     public void creatorRegister(
             @RequestParam(value = "about") String about,
-            @RequestParam(value = "profileBackground", required = false) MultipartFile profileBackground, Authentication authentication) throws IOException {
+            @RequestParam(value = "profileBackground", required = false) MultipartFile profileBackground,
+            @RequestParam(value = "profileImage", required = false) MultipartFile profileImage,
 
-            creatorService.creatorRegister(about, profileBackground, authentication);
+            Authentication authentication) throws IOException {
+
+            creatorService.creatorRegister(about, profileImage, profileBackground, authentication);
     }
 }

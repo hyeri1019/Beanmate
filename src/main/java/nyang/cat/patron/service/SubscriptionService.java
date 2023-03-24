@@ -43,8 +43,6 @@ public class SubscriptionService {
         System.out.println("subscription =============== " + subscription);
         subscriptionRepository.save(subscription);
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        customUserDetailsService.updateUserDetails(userInfo, userDetails);
 
     }
 }

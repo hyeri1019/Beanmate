@@ -19,6 +19,7 @@ public class PatronTier {
     @Column(name = "patron_tier_id")
     private Long id;
 
+    /* N 티어 : 1 크리에이터*/
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "creator_id")

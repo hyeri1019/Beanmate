@@ -12,7 +12,10 @@ import nyang.cat.patron.entity.PatronTier;
 import nyang.cat.patron.repository.PatronTierRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,12 +34,12 @@ public class BoardService {
     private final PatronTierRepository patronTierRepository;
 
 
-    /* ------------------ 페이징 ------------------*/
-    public Map getBoardList(Pageable pageable, SearchHandler sc, int pageNo, String category) {
+    /* ------------------ 페이징 + 검색 ------------------*/
+    public Map<String, Object> getBoardList(Pageable pageable, SearchHandler sc, int pageNo, String category) {
         System.out.println("sc = " + sc);
         System.out.println("category = " + category);
 
-        Map map = new HashMap();
+        Map<String, Object> map = new HashMap<>();
 
         sc = Optional.ofNullable(sc).orElse(new SearchHandler());
 
@@ -88,18 +91,59 @@ public class BoardService {
         return map;
     }
 
+    public Map<String, Object> boardListByCreator(String creator, Pageable pageable, int pageNo) {
+
+        Map<String, Object> map = new HashMap<>();
+
+        Page<Board> boardList = null;
+        List<Board> listContent = null;
+
+        boardList = boardRepository.findByWriter(creator, pageable);
+        listContent = boardList.getContent();
+
+        map.put("posts", listContent);
+
+        int totalPage = boardList.getTotalPages();
+        int startPage = (int) ((Math.floor((pageNo - 1) / 10) * 10) + 1
+                <= totalPage ? (Math.floor((pageNo - 1) / 10) * 10) + 1 : totalPage);
+
+        int endPage = (startPage + 10 - 1 < totalPage ? startPage + 10 - 1 : totalPage);
+
+        boolean hasPrev = boardList.hasPrevious();
+        boolean hasNext = boardList.hasNext();
+
+        int prevIndex = boardList.previousOrFirstPageable().getPageNumber() + 1;
+        int nextIndex = boardList.nextOrLastPageable().getPageNumber() + 1;
+
+        map.put("pagination", new Pagination(totalPage, startPage, endPage, hasPrev, hasNext, prevIndex, nextIndex));
+
+        return map;
+    }
+
+
     /* ------------------ 글읽기 ------------------*/
-    public Board findPost(Long pno) {
+    public Object findPost(Long pno, Authentication authentication) {
+        Users requestUser = usersService.getUserInfo(authentication);
+
         Board board = boardRepository.findById(pno)
                 .orElseThrow(() -> new RuntimeException(String.valueOf(pno)));
 
+        System.out.println("================"+board.getWriter());
+        System.out.println("================"+requestUser.getName());
 
-        /* 클릭하면 조회수 증가 */
-        int viewCnt = board.getViewCnt();
-        board.setViewCnt(viewCnt + 1);
-        boardRepository.save(board);
+        if(board.getAuthLevel().equals("public") || board.getWriter().equals(requestUser.getName())) {
+            return board;
+        }
 
-        return board;
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        System.out.println("authorities ==== " + authorities);
+
+        String requiredAuthority = "ROLE_"+board.getAuthLevel();
+        System.out.println("requiredAuthority = " + requiredAuthority);
+        Boolean hasAccess = authorities.stream().anyMatch(authority -> authority.getAuthority().equals(requiredAuthority));
+
+       return hasAccess;
+
     }
 
     /* ------------------ 글쓰기 ------------------*/
@@ -117,13 +161,17 @@ public class BoardService {
             file.transferTo(new File(filePath));
         }
 
+        if(!authLevel.equals("public")) {
+        authLevel = user.getName()+"_"+authLevel;
+        }
+
         Board board = Board.builder()
                 .title(title)
                 .user(user)
                 .writer(user.getName())
                 .content(content)
                 .category(category)
-                .authLevel(user.getName()+"_"+authLevel)
+                .authLevel(authLevel)
                 .imageName(fileName)
                 .build();
 

@@ -35,6 +35,7 @@ public interface UsersRepository extends JpaRepository<Users, Long>{
                           orElseThrow() : 값이 null 이면 인수로 전달된 예외를 발생시킴
      */
         Optional<Users> findByEmail(String email);
+        Optional<Users> findByName(String name);
         boolean existsByEmail(String email);
 }
 

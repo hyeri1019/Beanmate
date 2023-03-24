@@ -32,6 +32,9 @@ public class Creator {
     @Column(nullable=true)
     private String profileBackground;
 
+    @Column(nullable = true)
+    private String profileImage;
+
     @JsonIgnore
     @OneToMany(mappedBy = "creator")
     private List<PatronTier> patronTiers;
