@@ -20,6 +20,7 @@ RESTful-API 기반의 Single Page Application 입니다.
 ## 주요 기능
 - 카카오 API 를 이용한 카카오 로그인/회원가입 서비스
 - Json Web Token 방식의 권한 및 인증 처리 진행
+- Stateless 환경에서 로그인 상태 유지
 - 비동기 게시판 페이지네이션, 게시물 검색 기능, 이미지 첨부 기능, CRUD
 - Spring Security 를 이용하여 여러 사용자의 여러 권한을 관리
 - 후원 level 에 따른 게시물 공개 설정 기능
