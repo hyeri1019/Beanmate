@@ -23,3 +23,7 @@ RESTful-API 기반의 Single Page Application 입니다.
 - 비동기 게시판 페이지네이션, 게시물 검색 기능, 이미지 첨부 기능, CRUD
 - Spring Security 를 이용하여 여러 사용자의 여러 권한을 관리
 - 후원 level 에 따른 게시물 공개 설정 기능
+
+
+## 추가 중인 기능
+- Websocket 을 이용한 실시간 채팅
